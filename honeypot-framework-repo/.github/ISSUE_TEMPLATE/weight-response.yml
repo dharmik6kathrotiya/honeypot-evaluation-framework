@@ -1,0 +1,204 @@
+name: "Framework Weight Response"
+description: "Share your professional opinion on how the framework categories should be weighted for SME honeypot evaluation."
+title: "[Weight Response] "
+labels: ["weight-response"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Honeypot Evaluation Framework — Weight Response
+
+        Thank you for contributing your perspective. This takes **2–5 minutes**.
+
+        We are collecting professional opinions on how the four evaluation categories should be weighted when assessing honeypot solutions for **Small and Medium Enterprises (SMEs)**.
+
+        Our base framework uses: **Cost 25% | Deployment 30% | Detection 25% | Operations 20%**
+
+        Please share what *you* think the weights should be, based on your experience.
+
+        ---
+
+  - type: markdown
+    attributes:
+      value: "### About You (optional but helps us contextualise responses)"
+
+  - type: dropdown
+    id: role
+    attributes:
+      label: "Your primary role"
+      options:
+        - IT Administrator / Generalist
+        - Security Engineer / Analyst
+        - CISO / Security Manager
+        - MSP / MSSP / Systemhaus
+        - Academic / Researcher
+        - Student
+        - Other
+    validations:
+      required: false
+
+  - type: dropdown
+    id: org_size
+    attributes:
+      label: "Organisation size (employees)"
+      options:
+        - "1–9 (Micro)"
+        - "10–49 (Small)"
+        - "50–249 (Medium)"
+        - "250+ (Large)"
+        - "N/A / Prefer not to say"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: honeypot_experience
+    attributes:
+      label: "Have you deployed or managed a honeypot?"
+      options:
+        - "Yes — in production"
+        - "Yes — in a lab/test environment"
+        - "No — but I have evaluated them"
+        - "No — no direct experience"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### Category Weights
+
+        The four categories must sum to **100%**. Enter whole numbers.
+
+        | Category | What it measures |
+        |----------|-----------------|
+        | **Cost & Resources** | Licensing, hardware, hosting costs |
+        | **Deployment Complexity** | Installation, configuration, documentation, usability, scalability |
+        | **Detection Effectiveness** | Protocol coverage, interaction depth, logging, fingerprinting resistance, malware capture |
+        | **Operational Manageability** | Monitoring, alerting, stability, community support |
+
+  - type: input
+    id: w_cost
+    attributes:
+      label: "Cost & Resources (%)"
+      description: "How important is cost/resource efficiency?"
+      placeholder: "e.g. 25"
+    validations:
+      required: true
+
+  - type: input
+    id: w_deployment
+    attributes:
+      label: "Deployment Complexity (%)"
+      description: "How important is ease of deployment and usability?"
+      placeholder: "e.g. 30"
+    validations:
+      required: true
+
+  - type: input
+    id: w_detection
+    attributes:
+      label: "Detection Effectiveness (%)"
+      description: "How important is the honeypot's core detection capability?"
+      placeholder: "e.g. 25"
+    validations:
+      required: true
+
+  - type: input
+    id: w_operations
+    attributes:
+      label: "Operational Manageability (%)"
+      description: "How important is ongoing maintenance and monitoring?"
+      placeholder: "e.g. 20"
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### Sub-Weight Redistribution (Optional)
+
+        By default, criteria within each category are weighted equally. If you believe certain criteria matter more than others *within* a category, you can redistribute below.
+
+        **Format:** `CriterionName: weight%` — sub-weights within a category must sum to 100%.
+        **Leave blank** to keep equal weighting for that category.
+
+  - type: textarea
+    id: sub_weights_cost
+    attributes:
+      label: "Custom sub-weights for Cost & Resources (optional)"
+      description: "Criteria: Software Licensing Cost, Hardware Requirements, Cloud/Hosting Cost"
+      placeholder: |
+        Software Licensing Cost: 20%
+        Hardware Requirements: 50%
+        Cloud/Hosting Cost: 30%
+    validations:
+      required: false
+
+  - type: textarea
+    id: sub_weights_deployment
+    attributes:
+      label: "Custom sub-weights for Deployment Complexity (optional)"
+      description: "Criteria: Installation Process, Configuration Complexity, Documentation Quality, Update/Maintenance, Non-Specialist Usability, Scalability"
+      placeholder: |
+        Installation Process: 20%
+        Configuration Complexity: 15%
+        Documentation Quality: 10%
+        Update/Maintenance: 15%
+        Non-Specialist Usability: 25%
+        Scalability: 15%
+    validations:
+      required: false
+
+  - type: textarea
+    id: sub_weights_detection
+    attributes:
+      label: "Custom sub-weights for Detection Effectiveness (optional)"
+      description: "Criteria: Protocol Coverage (base 20%), Interaction Level (18%), Logging Quality (18%), Fingerprinting Resistance (20%), Malware/Payload Capture (12%), Threat Intel Output (12%)"
+      placeholder: |
+        Protocol Coverage: 20%
+        Interaction Level: 18%
+        Logging Quality: 18%
+        Fingerprinting Resistance: 20%
+        Malware/Payload Capture: 12%
+        Threat Intelligence Output: 12%
+    validations:
+      required: false
+
+  - type: textarea
+    id: sub_weights_operations
+    attributes:
+      label: "Custom sub-weights for Operational Manageability (optional)"
+      description: "Criteria: Monitoring Interface, Alert Integration, Runtime Resource Consumption, Stability/Reliability, Community Support"
+      placeholder: |
+        Monitoring Interface: 25%
+        Alert Integration: 20%
+        Runtime Resource Consumption: 15%
+        Stability/Reliability: 25%
+        Community Support: 15%
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: "---"
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: "Rationale (optional)"
+      description: "Why did you choose these weights? Any criteria you think are missing or misplaced?"
+      placeholder: "e.g. In my experience as an MSSP, most SME clients abandon tools that are hard to deploy, regardless of detection quality..."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: missing_criteria
+    attributes:
+      label: "Are any important criteria missing from the framework?"
+      options:
+        - "No — the 20 criteria cover the relevant factors"
+        - "Yes — see my rationale above"
+    validations:
+      required: false

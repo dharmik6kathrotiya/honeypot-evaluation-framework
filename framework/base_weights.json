@@ -1,0 +1,67 @@
+{
+  "framework_version": "1.0.0",
+  "title": "Weighted Multi-Criteria Evaluation Framework for Open-Source Honeypot Solutions in SMEs",
+  "description": "Base category weights derived from SME cybersecurity literature synthesis. Respondents are invited to propose alternative weight distributions based on their professional experience.",
+  "source": "Kathrotiya, Mayer, Keller (2026) — Journal of Cybersecurity and Privacy",
+  "categories": [
+    {
+      "id": "C1",
+      "name": "Cost & Resources",
+      "base_weight": 25,
+      "description": "Financial and infrastructure burden of adopting the honeypot solution.",
+      "criteria": [
+        { "id": "C1.1", "name": "Software Licensing Cost", "base_sub_weight": 33.33 },
+        { "id": "C1.2", "name": "Hardware Requirements", "base_sub_weight": 33.33 },
+        { "id": "C1.3", "name": "Cloud/Hosting Cost", "base_sub_weight": 33.34 }
+      ]
+    },
+    {
+      "id": "C2",
+      "name": "Deployment Complexity",
+      "base_weight": 30,
+      "description": "Effort required for an SME to install, configure, and begin operating the solution.",
+      "criteria": [
+        { "id": "C2.1", "name": "Installation Process", "base_sub_weight": 16.67 },
+        { "id": "C2.2", "name": "Configuration Complexity", "base_sub_weight": 16.67 },
+        { "id": "C2.3", "name": "Documentation Quality", "base_sub_weight": 16.67 },
+        { "id": "C2.4", "name": "Update/Maintenance Process", "base_sub_weight": 16.67 },
+        { "id": "C2.5", "name": "Non-Specialist Usability", "base_sub_weight": 16.67 },
+        { "id": "C2.6", "name": "Scalability", "base_sub_weight": 16.65 }
+      ]
+    },
+    {
+      "id": "C3",
+      "name": "Detection Effectiveness",
+      "base_weight": 25,
+      "description": "How well the honeypot fulfils its core purpose of attracting, detecting, and analysing attacks.",
+      "criteria": [
+        { "id": "C3.1", "name": "Protocol Coverage", "base_sub_weight": 20 },
+        { "id": "C3.2", "name": "Interaction Level", "base_sub_weight": 18 },
+        { "id": "C3.3", "name": "Logging Quality", "base_sub_weight": 18 },
+        { "id": "C3.4", "name": "Fingerprinting Resistance", "base_sub_weight": 20 },
+        { "id": "C3.5", "name": "Malware/Payload Capture", "base_sub_weight": 12 },
+        { "id": "C3.6", "name": "Threat Intelligence Output", "base_sub_weight": 12 }
+      ]
+    },
+    {
+      "id": "C4",
+      "name": "Operational Manageability",
+      "base_weight": 20,
+      "description": "Ongoing effort required to maintain and monitor the honeypot once deployed.",
+      "criteria": [
+        { "id": "C4.1", "name": "Monitoring Interface", "base_sub_weight": 20 },
+        { "id": "C4.2", "name": "Alert Integration", "base_sub_weight": 20 },
+        { "id": "C4.3", "name": "Runtime Resource Consumption", "base_sub_weight": 20 },
+        { "id": "C4.4", "name": "Stability/Reliability", "base_sub_weight": 20 },
+        { "id": "C4.5", "name": "Community Support", "base_sub_weight": 20 }
+      ]
+    }
+  ],
+  "grading_scale": [
+    { "grade": "A+", "min": 4.50, "max": 5.00, "label": "Highly suitable for SME deployment" },
+    { "grade": "A",  "min": 4.00, "max": 4.49, "label": "Suitable with minor limitations" },
+    { "grade": "B+", "min": 3.50, "max": 3.99, "label": "Conditionally suitable" },
+    { "grade": "B",  "min": 3.00, "max": 3.49, "label": "Suitable only with significant caveats" },
+    { "grade": "C",  "min": 0.00, "max": 2.99, "label": "Not recommended for SMEs" }
+  ]
+}
