@@ -2,7 +2,7 @@
   "framework_version": "1.0.0",
   "title": "Weighted Multi-Criteria Evaluation Framework for Open-Source Honeypot Solutions in SMEs",
   "description": "Base category weights derived from SME cybersecurity literature synthesis. Respondents are invited to propose alternative weight distributions based on their professional experience.",
-  "source": "Kathrotiya, Mayer, Keller (2026) — Journal of Cybersecurity and Privacy",
+  "source": "",
   "categories": [
     {
       "id": "C1",
