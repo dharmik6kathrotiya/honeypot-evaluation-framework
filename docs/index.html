@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Honeypot Evaluation Framework — Weight Response</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg-card: #111827;
+    --bg-input: #1a2035;
+    --border: #2a3050;
+    --border-active: #6366f1;
+    --text: #e2e8f0;
+    --text-sec: #8892b0;
+    --text-muted: #4a5578;
+    --accent: #6366f1;
+    --accent2: #818cf8;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --orange: #f97316;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 32px 0 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+  .header-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .header p {
+    color: var(--text-sec); font-size: 13px;
+    max-width: 500px; margin: 0 auto;
+  }
+  .header .time-badge {
+    display: inline-block; margin-top: 10px;
+    padding: 4px 12px; border-radius: 20px;
+    background: rgba(99,102,241,0.12); color: var(--accent2);
+    font-size: 12px; font-weight: 500;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 14px; font-weight: 600; color: var(--accent2);
+    margin-bottom: 14px;
+  }
+
+  /* Weight bar */
+  .weight-bar-container {
+    margin-bottom: 20px;
+  }
+  .weight-bar {
+    display: flex; height: 12px; border-radius: 6px;
+    overflow: hidden; background: var(--bg-input);
+    margin-bottom: 8px;
+  }
+  .weight-bar div { transition: width 0.3s ease; }
+  .weight-legend {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    justify-content: center; font-size: 12px;
+  }
+  .weight-legend span {
+    display: flex; align-items: center; gap: 5px;
+    color: var(--text-sec);
+  }
+  .legend-dot {
+    width: 8px; height: 8px; border-radius: 3px;
+    display: inline-block;
+  }
+  .weight-total {
+    text-align: center; font-size: 13px; font-weight: 600;
+    margin-top: 8px; padding: 4px 0;
+  }
+  .weight-total.valid { color: var(--green); }
+  .weight-total.invalid { color: var(--red); }
+
+  /* Category row */
+  .cat-row {
+    padding: 14px 16px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+  .cat-row:hover { border-color: var(--border-active); }
+  .cat-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .cat-dot {
+    width: 12px; height: 12px; border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .cat-name {
+    font-weight: 600; font-size: 14px; flex: 1;
+  }
+  .cat-value {
+    font-size: 18px; font-weight: 700;
+    min-width: 50px; text-align: right;
+  }
+
+  /* Slider */
+  input[type="range"] {
+    -webkit-appearance: none; width: 100%; height: 6px;
+    background: var(--border); border-radius: 3px;
+    outline: none; cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px;
+    border-radius: 50%; background: var(--accent);
+    border: 2px solid var(--bg-card); cursor: pointer;
+    box-shadow: 0 0 6px rgba(99,102,241,0.4);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--bg-card);
+    cursor: pointer;
+  }
+
+  /* Sub-weight toggle */
+  .sub-toggle {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 10px; cursor: pointer;
+    color: var(--text-muted); font-size: 12px;
+    user-select: none;
+    border: none; background: none; padding: 0;
+    font-family: inherit;
+  }
+  .sub-toggle:hover { color: var(--text-sec); }
+  .sub-toggle .arrow {
+    transition: transform 0.2s;
+    font-size: 10px;
+  }
+  .sub-toggle .arrow.open { transform: rotate(90deg); }
+
+  /* Sub-weights panel */
+  .sub-panel {
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid var(--border);
+    display: none;
+  }
+  .sub-panel.open { display: block; }
+  .sub-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 8px; font-size: 12px;
+  }
+  .sub-row label {
+    flex: 1; color: var(--text-sec);
+    min-width: 0; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+  .sub-row input[type="range"] { flex: 1; height: 4px; }
+  .sub-row .sub-val {
+    min-width: 36px; text-align: right;
+    font-weight: 600; font-size: 12px;
+  }
+  .sub-total {
+    font-size: 11px; text-align: right; margin-top: 4px;
+  }
+
+  /* Dropdowns */
+  .form-group {
+    margin-bottom: 14px;
+  }
+  .form-group label {
+    display: block; font-size: 12px; color: var(--text-sec);
+    margin-bottom: 5px; font-weight: 500;
+  }
+  select, textarea {
+    width: 100%; padding: 8px 10px;
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text);
+    font-family: inherit; font-size: 13px;
+    outline: none; transition: border-color 0.2s;
+  }
+  select:focus, textarea:focus { border-color: var(--accent); }
+  textarea { min-height: 80px; resize: vertical; }
+
+  /* Base weights reference */
+  .base-ref {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .base-chip {
+    padding: 3px 8px; border-radius: 4px;
+    font-size: 11px; color: var(--text-muted);
+    background: rgba(42,48,80,0.5);
+    border: 1px solid var(--border);
+  }
+
+  /* Submit */
+  .submit-btn {
+    width: 100%; padding: 14px 0;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 8px;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    transition: background 0.2s, opacity 0.2s;
+    margin-top: 8px;
+  }
+  .submit-btn:hover { background: var(--accent2); }
+  .submit-btn:disabled {
+    opacity: 0.4; cursor: not-allowed;
+  }
+  .submit-note {
+    text-align: center; font-size: 11px;
+    color: var(--text-muted); margin-top: 8px;
+  }
+
+  /* Info box */
+  .info-box {
+    padding: 12px 14px; border-radius: 6px;
+    background: rgba(99,102,241,0.06);
+    border-left: 3px solid var(--accent);
+    font-size: 12px; color: var(--text-sec);
+    margin-bottom: 16px; line-height: 1.5;
+  }
+
+  /* Responsive */
+  @media (max-width: 500px) {
+    .container { padding: 16px 14px 40px; }
+    .header h1 { font-size: 18px; }
+    .cat-value { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-icon">⬡</div>
+    <h1>Honeypot Evaluation Framework</h1>
+    <p>Share your professional opinion on how the four evaluation categories should be weighted for SME honeypot selection.</p>
+    <span class="time-badge">⏱ Takes 2–5 minutes</span>
+  </div>
+
+  <!-- About You -->
+  <div class="card">
+    <div class="card-title">About You <span style="font-weight:400;color:var(--text-muted)">(optional)</span></div>
+    <div class="form-group">
+      <label>Your primary role</label>
+      <select id="role">
+        <option value="">— Select —</option>
+        <option>IT Administrator / Generalist</option>
+        <option>Security Engineer / Analyst</option>
+        <option>CISO / Security Manager</option>
+        <option>MSP / MSSP / Systemhaus</option>
+        <option>Academic / Researcher</option>
+        <option>Student</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Organisation size (employees)</label>
+      <select id="orgSize">
+        <option value="">— Select —</option>
+        <option>1–9 (Micro)</option>
+        <option>10–49 (Small)</option>
+        <option>50–249 (Medium)</option>
+        <option>250+ (Large)</option>
+        <option>N/A / Prefer not to say</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Have you deployed or managed a honeypot?</label>
+      <select id="experience">
+        <option value="">— Select —</option>
+        <option>Yes — in production</option>
+        <option>Yes — in a lab/test environment</option>
+        <option>No — but I have evaluated them</option>
+        <option>No — no direct experience</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Category Weights -->
+  <div class="card">
+    <div class="card-title">Category Weights</div>
+
+    <div class="info-box">
+      <strong>Our base framework uses:</strong><br>
+      Cost &amp; Resources 25% · Deployment Complexity 30% · Detection Effectiveness 25% · Operational Manageability 20%<br><br>
+      Drag the sliders to set what <em>you</em> think each category should weigh. They must sum to 100%.
+    </div>
+
+    <!-- Visual bar -->
+    <div class="weight-bar-container">
+      <div class="weight-bar" id="weightBar"></div>
+      <div class="weight-legend" id="weightLegend"></div>
+      <div class="weight-total" id="weightTotal"></div>
+    </div>
+
+    <!-- Category sliders -->
+    <div id="categorySliders"></div>
+  </div>
+
+  <!-- Rationale -->
+  <div class="card">
+    <div class="card-title">Rationale <span style="font-weight:400;color:var(--text-muted)">(optional)</span></div>
+    <div class="form-group">
+      <label>Why did you choose these weights? Any criteria missing or misplaced?</label>
+      <textarea id="rationale" placeholder="e.g. In my experience as an MSSP, most SME clients abandon tools that are hard to deploy, regardless of detection quality..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Are any important criteria missing from the framework?</label>
+      <select id="missingCriteria">
+        <option value="">— Select —</option>
+        <option>No — the 20 criteria cover the relevant factors</option>
+        <option>Yes — see my rationale above</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <button class="submit-btn" id="submitBtn" disabled>
+    Weights must sum to 100% to submit
+  </button>
+  <p class="submit-note">
+    Opens a pre-filled GitHub Issue. Your response is public and will be aggregated for research.
+  </p>
+</div>
+
+<script>
+const REPO = 'dharmik6kathrotiya/honeypot-evaluation-framework';
+
+const CATEGORIES = [
+  {
+    id: 'cost', name: 'Cost & Resources', color: '#6366f1', base: 25,
+    criteria: [
+      { name: 'Software Licensing Cost', base: 33.33 },
+      { name: 'Hardware Requirements', base: 33.33 },
+      { name: 'Cloud/Hosting Cost', base: 33.34 },
+    ]
+  },
+  {
+    id: 'deployment', name: 'Deployment Complexity', color: '#f59e0b', base: 30,
+    criteria: [
+      { name: 'Installation Process', base: 16.67 },
+      { name: 'Configuration Complexity', base: 16.67 },
+      { name: 'Documentation Quality', base: 16.67 },
+      { name: 'Update/Maintenance Process', base: 16.67 },
+      { name: 'Non-Specialist Usability', base: 16.67 },
+      { name: 'Scalability', base: 16.65 },
+    ]
+  },
+  {
+    id: 'detection', name: 'Detection Effectiveness', color: '#10b981', base: 25,
+    criteria: [
+      { name: 'Protocol Coverage', base: 20 },
+      { name: 'Interaction Level', base: 18 },
+      { name: 'Logging Quality', base: 18 },
+      { name: 'Fingerprinting Resistance', base: 20 },
+      { name: 'Malware/Payload Capture', base: 12 },
+      { name: 'Threat Intelligence Output', base: 12 },
+    ]
+  },
+  {
+    id: 'operations', name: 'Operational Manageability', color: '#f97316', base: 20,
+    criteria: [
+      { name: 'Monitoring Interface', base: 20 },
+      { name: 'Alert Integration', base: 20 },
+      { name: 'Runtime Resource Consumption', base: 20 },
+      { name: 'Stability/Reliability', base: 20 },
+      { name: 'Community Support', base: 20 },
+    ]
+  },
+];
+
+// State
+const weights = {};
+const subWeights = {};
+const subOpen = {};
+
+CATEGORIES.forEach(cat => {
+  weights[cat.id] = cat.base;
+  subWeights[cat.id] = cat.criteria.map(c => c.base);
+  subOpen[cat.id] = false;
+});
+
+function render() {
+  const total = Object.values(weights).reduce((s, v) => s + v, 0);
+  const valid = Math.abs(total - 100) < 0.5;
+
+  // Weight bar
+  const bar = document.getElementById('weightBar');
+  bar.innerHTML = CATEGORIES.map(cat =>
+    `<div style="width:${weights[cat.id]}%;background:${cat.color}"></div>`
+  ).join('');
+
+  // Legend
+  const legend = document.getElementById('weightLegend');
+  legend.innerHTML = CATEGORIES.map(cat =>
+    `<span><span class="legend-dot" style="background:${cat.color}"></span>${cat.name} (${weights[cat.id]}%)</span>`
+  ).join('');
+
+  // Total
+  const totalEl = document.getElementById('weightTotal');
+  totalEl.textContent = `Total: ${total}%${valid ? ' ✓' : ' — must equal 100%'}`;
+  totalEl.className = 'weight-total ' + (valid ? 'valid' : 'invalid');
+
+  // Submit button
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = !valid;
+  btn.textContent = valid ? 'Submit Response via GitHub →' : 'Weights must sum to 100% to submit';
+
+  // Category sliders
+  const container = document.getElementById('categorySliders');
+  container.innerHTML = CATEGORIES.map((cat, ci) => {
+    const w = weights[cat.id];
+    const isOpen = subOpen[cat.id];
+    const sw = subWeights[cat.id];
+    const swTotal = sw.reduce((s, v) => s + v, 0);
+    const swValid = Math.abs(swTotal - 100) < 1;
+
+    return `
+      <div class="cat-row">
+        <div class="cat-header">
+          <span class="cat-dot" style="background:${cat.color}"></span>
+          <span class="cat-name">${cat.name}</span>
+          <span class="cat-value" style="color:${cat.color}">${w}%</span>
+        </div>
+        <input type="range" min="0" max="60" value="${w}"
+          oninput="setWeight('${cat.id}', parseInt(this.value))"
+          style="accent-color:${cat.color}">
+        <div class="base-ref" style="margin-top:8px">
+          <span class="base-chip">Base: ${cat.base}%</span>
+          <span class="base-chip">${w > cat.base ? '▲' : w < cat.base ? '▼' : '='} ${Math.abs(w - cat.base)}pp ${w > cat.base ? 'higher' : w < cat.base ? 'lower' : 'same'}</span>
+        </div>
+        <button class="sub-toggle" onclick="toggleSub('${cat.id}')">
+          <span class="arrow ${isOpen ? 'open' : ''}">▶</span>
+          ${isOpen ? 'Hide' : 'Customise'} sub-weights (${cat.criteria.length} criteria)
+        </button>
+        <div class="sub-panel ${isOpen ? 'open' : ''}">
+          ${cat.criteria.map((cr, i) => `
+            <div class="sub-row">
+              <label>${cr.name}</label>
+              <input type="range" min="0" max="60" value="${Math.round(sw[i])}"
+                oninput="setSubWeight('${cat.id}', ${i}, parseInt(this.value))"
+                style="accent-color:${cat.color}">
+              <span class="sub-val">${Math.round(sw[i])}%</span>
+            </div>
+          `).join('')}
+          <div class="sub-total" style="color:${swValid ? 'var(--green)' : 'var(--red)'}">
+            Sub-total: ${Math.round(swTotal)}%${swValid ? ' ✓' : ' ≠ 100%'}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function setWeight(id, val) {
+  weights[id] = val;
+  render();
+}
+
+function setSubWeight(catId, idx, val) {
+  subWeights[catId][idx] = val;
+  render();
+}
+
+function toggleSub(catId) {
+  subOpen[catId] = !subOpen[catId];
+  render();
+}
+
+// Submit
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const total = Object.values(weights).reduce((s, v) => s + v, 0);
+  if (Math.abs(total - 100) >= 0.5) return;
+
+  const role = document.getElementById('role').value;
+  const orgSize = document.getElementById('orgSize').value;
+  const experience = document.getElementById('experience').value;
+  const rationale = document.getElementById('rationale').value;
+  const missing = document.getElementById('missingCriteria').value;
+
+  // Build issue body
+  let body = '';
+  body += `### Your primary role\n\n${role || '_No response_'}\n\n`;
+  body += `### Organisation size (employees)\n\n${orgSize || '_No response_'}\n\n`;
+  body += `### Have you deployed or managed a honeypot?\n\n${experience || '_No response_'}\n\n`;
+  body += `### Cost & Resources (%)\n\n${weights.cost}\n\n`;
+  body += `### Deployment Complexity (%)\n\n${weights.deployment}\n\n`;
+  body += `### Detection Effectiveness (%)\n\n${weights.detection}\n\n`;
+  body += `### Operational Manageability (%)\n\n${weights.operations}\n\n`;
+
+  // Sub-weights (only if customised)
+  CATEGORIES.forEach(cat => {
+    const sw = subWeights[cat.id];
+    const isDefault = cat.criteria.every((cr, i) => Math.abs(sw[i] - cr.base) < 1);
+    if (!isDefault) {
+      body += `### Custom sub-weights for ${cat.name}\n\n`;
+      cat.criteria.forEach((cr, i) => {
+        body += `${cr.name}: ${Math.round(sw[i])}%\n`;
+      });
+      body += '\n';
+    }
+  });
+
+  body += `### Rationale (optional)\n\n${rationale || '_No response_'}\n\n`;
+  body += `### Are any important criteria missing from the framework?\n\n${missing || '_No response_'}\n\n`;
+
+  const title = encodeURIComponent('[Weight Response] ');
+  const encodedBody = encodeURIComponent(body);
+  const labels = encodeURIComponent('weight-response');
+
+  const url = `https://github.com/${REPO}/issues/new?title=${title}&body=${encodedBody}&labels=${labels}`;
+
+  window.open(url, '_blank');
+});
+
+// Initial render
+render();
+</script>
+
+</body>
+</html>
